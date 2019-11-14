@@ -1,35 +1,44 @@
 """ Setup.py for packaging log-anomaly-detector as library """
 from setuptools import setup, find_packages
 
-with open("README.rst", "r") as fh:
+with open("README.rst", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 REQUIRED_PKG = [
     "Click",
     "elasticsearch5",
-    "urllib3==1.21.1",
     "gensim",
     "matplotlib",
     "numpy",
     "pandas",
     "prometheus_client",
-    "Flask",
+    "Flask==1.0.4",
     "scikit-learn",
     "scipy",
     "tqdm",
-    "Flask-SQLAlchemy",
+    "SQLAlchemy",
     "PyMySQL",
     "sompy",
     "pyyaml",
+    "boto3",
+    "pyyaml",
+    "numba",
+    "kafka-python",
+    "jaeger-client",
+    "opentracing_instrumentation",
+    "prometheus_flask_exporter"
 ]
 
 setup(
-    name="scorpio",
-    version="0.0.1-rc2",
+    name="log-anomaly-detector",
+    version="0.0.1b5",
     py_modules=['app'],
     packages=find_packages(),
     setup_requires=["pytest-runner"],
-    tests_require=["pytest"],
+    tests_require=[
+        "pytest",
+        "pytest-sugar",
+        "pytest-xdist"],
     zip_safe=False,
     classifiers=(
         "Development Status :: 1 - Planning",
@@ -49,6 +58,6 @@ setup(
     install_requires=REQUIRED_PKG,
     entry_points="""
         [console_scripts]
-        scorpio=app:cli
+        log-anomaly-detector=app:cli
     """,
 )

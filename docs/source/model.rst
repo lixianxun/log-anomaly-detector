@@ -14,7 +14,7 @@ We are using Word2Vec in this application in order to vectorize the natural lang
 
 SOM
 ---
-SOM (Self_organizing map) is the unsupervised learning algorithm used to help us quantify the anomalousness of our logs.
+SOM (self-organizing map) is the unsupervised learning algorithm used to help us quantify the anomalousness of our logs.
 
 SOM, or Kohonon maps, are a type of unsupervised learning algorithm that "produce a low-dimensional (typically two-dimensional), discretized representation of the input space of the training samples" (wikipedia: https://en.wikipedia.org/wiki/Self-organizing_map). 
 
@@ -29,9 +29,4 @@ Extending Model
 If you desire to extend the machine learning models and would like to contribute your custom models you can extend:
 
 .. literalinclude:: ../../anomaly_detector/adapters/base_model_adapter.py
-
-To extend storage with different storage systems:
-
-
-.. literalinclude:: ../../anomaly_detector/adapters/base_storage_adapter.py
 

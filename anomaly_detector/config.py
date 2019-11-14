@@ -24,34 +24,21 @@ def check_or_create_model_dir(config):
         os.mkdir(config.MODEL_DIR)
 
 
-class Borg(object):
-    """Borg aka monostate is a class that has shared state."""
-
-    __shared_state = {}
-
-    def __init__(self):
-        """Setting up dictionary to be equal to shared state."""
-        self.__dict__ = self.__shared_state
-
-    def __str__(self):
-        """When we print the string we want to get the shared state."""
-        return self.state
-
-
-class Configuration(Borg):
+class Configuration:
     """Main configuration class which is contains the config values."""
 
     FACT_STORE_URL = ""
     FREQ_NOISE = 1
     # One of the storage backends available in storage/ dir
-    STORAGE_BACKEND = "local"
+    STORAGE_DATASOURCE = "local"
+    STORAGE_DATASINK = "local"
     # Location of local data
     # A directory where trained models will be stored
     MODEL_DIR = "./models/"
     MODE_DIR_CALLABLE = check_or_create_model_dir
-    # Name of the file where SOM model will be stored TODO: move to model config
+    # Name of the file where SOM model will be stored
     MODEL_FILE = "SOM.model"
-    # Name of the file where W2V model will be stored TODO: move to model config
+    # Name of the file where W2V model will be stored
     W2V_MODEL_FILE = "W2V.model"
     MODEL_PATH_CALLABLE = join_model_path
     MODEL_PATH = ""
@@ -63,6 +50,11 @@ class Configuration(Borg):
     W2V_COMPUTE_LOSS = False
     W2V_SEED = 1
     W2V_WORKERS = 3
+    # Custom parameters for SOM
+    SOMPY_TRAIN_ROUGH_LEN = 100
+    SOMPY_TRAIN_FINETUNE_LEN = 5
+    SOMPY_NODE_MAP = 24
+    SOMPY_INIT = "pca"
 
     MODEL_STORE = ""
     MODEL_STORE_PATH = "anomaly-detection/models/"
@@ -70,7 +62,7 @@ class Configuration(Borg):
     TRAIN_TIME_SPAN = 900
     # Maximum number of entries for training loaded from backend storage
     TRAIN_MAX_ENTRIES = 315448
-    # Number of SOM training iterations TODO: move to model config
+    # Number of SOM training iterations
     TRAIN_ITERATIONS = 315448
     # If true, re-traing the models
     TRAIN_UPDATE_MODEL = False
@@ -112,12 +104,18 @@ class Configuration(Borg):
     ES_TARGET_INDEX = ""
     # ElasticSearch index name where log entries will be pulled from
     ES_INPUT_INDEX = ""
-    # JSON representing a query passed to ElasticSearch to match the data
+    # JSON representing a query passed to data source to match the data
+    LOG_FORMATTER = ""
+    # When customer has custom log format. We will need to perform custom processing.
     ES_QUERY = ""
-
-    # For testing offline training and inference without triggering emails
-    PREDICTION_ALERT = True
-
+    ES_VERSION = 5
+    KF_BOOTSTRAP_SERVER = ""
+    KF_TOPIC = ""
+    KF_CACERT = None
+    KF_SECURITY_PROTOCOL = 'PLAINTEXT'
+    KF_AUTO_TIMEOUT = 30000
+    ES_ELAST_ALERT = 1
+    OS_NAMESPACE = os.getenv("OPENSHIFT_BUILD_NAMESPACE", "localhost")
     prefix = "LAD"
 
     def __init__(self, prefix=None, config_yaml=None):
@@ -125,7 +123,6 @@ class Configuration(Borg):
         # For backward compatibility
         self.load_from_env()
         if config_yaml is not None:
-            # TODO: Open YAML File and load the configurations in here.
             with open(config_yaml) as f:
                 yaml_data = yaml.load(f, Loader=yaml.FullLoader)
                 for prop in self.__class__.__dict__.keys():

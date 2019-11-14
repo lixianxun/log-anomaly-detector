@@ -1,7 +1,46 @@
 Storage
 =======
 
-There are 2 storage backends implemented at the moment - ElasticSearch and local.
+The following table provides source and sink configuration fields that you can set for your data pipeline
+
++-------------------------------------+------------------------------+----------------------------+
+| Data Source                         | Source                       | Sink                       |
++=====================================+==============================+============================+
+| Elasticsearch                       | es                           |  es                        |
++-------------------------------------+------------------------------+----------------------------+
+| Local                               | local                        |  local                     |
++-------------------------------------+------------------------------+----------------------------+
+| Local Directory                     | localdir                     |                            |
++-------------------------------------+------------------------------+----------------------------+
+| Console Output                      |                              |  stdout                    |
++-------------------------------------+------------------------------+----------------------------+
+| Kafka                               |                              |  kafka                     |
++-------------------------------------+------------------------------+----------------------------+
+ 
+
+
+
+
+Example
+-------
+To read from Elasticsearch and write predictions to Kafka you can use the following configurations
+
+.. code-block:: shell
+
+   STORAGE_DATASOURCE: “es”
+   STORAGE_DATASINK: “kafka”
+
+.. image:: ../../imgs/storage-example.png
+
+.. Caution::
+
+   We have removed es.source/es.sink entirely and you need to specify "es" instead. See table above.
+
+
+
+Storage Details
+===============
+
 
 ElasticSearch
 -------------
@@ -18,4 +57,43 @@ Local storage backend is able to read data from a file or standard input and wri
 
 Input data can be in a form of JSON (one entry per line) or plain text (simplified JSON object resembling the ES entry described above is constructed). We also support common logging format ["timestamp  severity    message"]
 
+
+Stdout
+------
+
+You can output anomalies found out on console to allow us to debug without sending emails.
+
+
+LocalDir
+--------
+This works the same as the local storage except this will let you read from a directory of logs which can either be json or common log. We support only files ending with '.log' or '.json'
+
+
+
+
+
+
+.. note::
+
+   You will need to set the configuration via cli to select which data provider you will use.
+
+Extending Storage
+-----------------
+
+You can extend the following storage classes to allow for LAD to connect to different systems:
+
+
+.. literalinclude:: ../../anomaly_detector/storage/storage_sink.py
+.. literalinclude:: ../../anomaly_detector/storage/storage_source.py
+
+
+Here are git issues that explain how to set something like this up:
+
+See: https://github.com/AICoE/log-anomaly-detector/issues/281 for example of how to add new storage sink
+
+See: https://github.com/AICoE/log-anomaly-detector/issues/207 for example of how to add new storage source
+
+
+
+ 
 

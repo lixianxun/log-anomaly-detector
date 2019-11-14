@@ -12,6 +12,9 @@ pytest = "*"
 pytest-cov = "*"
 black = "*"
 coala = "*"
+openshift = "*"
+pytest-sugar = "*"
+pytest-xdist = "*"
 
 [packages]
 "elasticsearch5" = "*"
@@ -31,7 +34,12 @@ pyyaml = "*"
 Flask-SQLAlchemy = "*"
 PyMySQL = "*"
 numba = "*"
-
+kafka-python = "*"
+jaeger-client = "*"
+opentracing_instrumentation = "*"
+cryptography = "*"
+prometheus_flask_exporter = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.6"

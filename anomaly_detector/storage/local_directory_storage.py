@@ -1,23 +1,20 @@
 """Local Storage."""
 import json
 import logging
-from collections import deque
 from enum import Enum
 from pathlib import Path
-
-from pandas.io.json import json_normalize
-
 from anomaly_detector.exception import FileFormatNotSupported
-from anomaly_detector.storage.local_storage import LocalStorage
 from anomaly_detector.storage.storage_attribute import DefaultStorageAttribute
+from anomaly_detector.storage.storage_source import StorageSource
+from anomaly_detector.storage.storage import DataCleaner
+from collections import deque
+from pandas.io.json import json_normalize
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class LocalDirStorage(LocalStorage):
+class LocalDirStorage:
     """Local storage implementation."""
-
-    NAME = "localdir"
 
     def __init__(self, configuration):
         """Initialize local storage backend."""
@@ -29,14 +26,21 @@ class LocalDirStorage(LocalStorage):
         COMMON_LOG = "common_log"
         JSON = "json"
 
+
+class LocalDirectoryStorageDataSource(StorageSource, DataCleaner, LocalDirStorage):
+    """Local storage Data source implementation."""
+
+    NAME = "localdir.source"
+
+    def __init__(self, configuration):
+        """Initialize local storage backend."""
+        self.config = configuration
+
     def get_filesnames_recursively(self, root_path, *, file_ext='log', file_format='common_log'):
         """Setup file read processing."""
-        self.root_path = root_path
-        self.file_ext = file_ext
-        self.file_format = file_format
         if file_format not in (self.ALLOWED_FILE_FORMATS.COMMON_LOG.value, self.ALLOWED_FILE_FORMATS.JSON.value):
             raise FileFormatNotSupported("File format {} is not supported".format(file_format))
-        self.files = [filename for filename in Path(root_path).glob('**/*.{}'.format(self.file_ext))]
+        self.files = [filename for filename in Path(root_path).glob('**/*.{}'.format(file_ext))]
 
     def retrieve(self, storage_attribute: DefaultStorageAttribute):
         """Retrieve data from local storage."""
